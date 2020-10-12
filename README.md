@@ -345,3 +345,25 @@ var rotate = function(nums, k) {
     return nums
 }
 ```
+
+## leetcode 27. 移除元素
+```JS
+// 注意注意：你不需要考虑数组中超出新长度后面的元素。
+// 要求在原地实现
+var removeElement = function (nums, val) {
+    let i = 0
+    for (let j = 0; j < nums.length; j++) {
+        if(nums[j] != val) {
+            nums[i] = nums[j]
+            i++
+        }
+    }
+    return i
+}
+```
+
+
+## leetcode 26. 删除排序数组中的重复项
+```JS
+
+```
