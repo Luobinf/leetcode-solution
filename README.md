@@ -367,3 +367,52 @@ var removeElement = function (nums, val) {
 ```JS
 
 ```
+
+## leetcode 322. 零钱兑换
+```JS
+// 方法一：贪心+回溯
+// DFS 搜索顺序为面值从大到小，同一面值数量由多到少，搜索过程中记录到此为止所花费的硬币数。
+// 参考： https://leetcode-cn.com/problems/coin-change/solution/1msji-bai-100tan-xin-dfsjian-zhi-by-codermjlee/
+
+ /*
+  整体策略：优先尽可能多地选择较大面值的硬币（假设要凑够的金额是amount，当前正在选择的硬币面值是coin）
+  <1> 如果凑够了amount，说明得到了一个潜在答案，计算出目前能凑够amount的最少硬币数量ans，剪枝
+  <2> 如果没凑够amount
+      (1) 如果coin是最小面值，说明这个凑法不合理，剪枝
+      (2) 如果(目前已选择的硬币数量 + 1) >= ans，说明继续往下凑，硬币数量不会小于ans，剪枝
+      (3) 否则尝试选择面值比coin小的硬币去凑剩余的金额
+      (4) 减少面值为coin的硬币数量，进入 <1>
+*/
+var coinChange = function (coins, amount) {
+    if (amount === 0) return -1
+    let answer = [Infinity]
+    coins.sort((a, b) => a - b)
+    dfs(coins, amount, coins.length - 1, 0, answer)
+    return answer[0] === Infinity ? -1 : answer[0]
+
+    function dfs(coins, amount, coinIdx, count, answer) {
+        for (let c = Math.floor(amount / coins[coinIdx]); c >= 0; c--) {
+            const remain = amount - c * coins[coinIdx];
+            const curCount = count + c;
+            if (remain == 0) {
+                // 已经优先用面值较大的硬币了
+                // 如果用面值较小的硬币，凑出来的数量只会更多
+                // 所以直接剪枝，没必要尝试减少大面值硬币的数量，用小面值的硬币去凑
+                answer[0] = Math.min(answer[0], curCount);
+                return;
+            }
+
+            // 已经是最小面值了(即达到数组的最后一个元素了)，如果还凑不够amount，说明不可能凑出这个数目，直接剪枝
+            if (coinIdx == 0) return;
+
+            // 继续往下凑，硬币数量不会小于ans，直接剪枝
+            if (curCount + 1 >= answer[0]) return;
+
+            // 选择较小的面值凑够剩余的金额
+            dfs(coins, remain, coinIdx - 1, curCount, answer);
+        }
+
+    }
+
+}
+```
